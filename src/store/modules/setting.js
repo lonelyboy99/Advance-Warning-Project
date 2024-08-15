@@ -8,11 +8,11 @@
 import {isObject} from '@/lib/types'
 export default {
     state: () => ({
-        sbtxSwiper: true,//设备提醒轮播
-        ssyjSwiper:true,//实时预警轮播
+        sbtxSwiper: false,//设备提醒轮播
+        ssyjSwiper:false,//实时预警轮播
         isScale:true,//是否进行全局适配
         defaultOption: {
-            step: 4.4, // 数值越大速度滚动越快
+            step: 3, // 数值越大速度滚动越快
             hoverStop: true, // 是否开启鼠标悬停stop
             openWatch: true, // 开启数据实时监控刷新dom
             direction: 1, // 0向下 1向上 2向左 3向右

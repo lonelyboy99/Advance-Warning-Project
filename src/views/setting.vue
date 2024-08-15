@@ -38,7 +38,7 @@
                     </div>
                     <div class="setting_item">
                         <span class="setting_label">
-                            实时预警轮播:
+                            设备报警轮播:
                         </span>
                         <div class="setting_content">
                             <el-radio-group v-model="ssyjradio" @change="(val) => radiochange(val, 'ssyjSwiper')">
@@ -63,9 +63,9 @@ export default {
     data() {
         return {
             settingShow: false,
-            sbtxradio:true,
-            ssyjradio: true,
-            isScaleradio:true,
+            sbtxradio:false,
+            ssyjradio: false,
+            isScaleradio:false,
         };
     },
     computed: {},

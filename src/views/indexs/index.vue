@@ -6,23 +6,16 @@
         <div class="item">MQTT:{{ mqttConnectionStatus }}</div>
       </div>
       <ItemWrap class="contetn_left-top contetn_lr-item" title="数据监控">
-        <LeftTop
-            :temperatureData="temperatureData"
-            :humidityData="humidityData"
-            :lightingData="lightingData"
-            :powerData="powerData"
-        />
-
+        <LeftTop/>
       </ItemWrap>
-      <ItemWrap class="contetn_left-center contetn_lr-item" title="预测功能">
+      <ItemWrap class="contetn_left-center contetn_lr-item" title="AI预测">
         <LeftPrediction/>
       </ItemWrap>
-      <ItemWrap
-          class="contetn_left-bottom contetn_lr-item"
-          title="设备提醒"
-          style="padding: 0 10px 16px 10px"
-      >
-        <LeftBottom/>
+      <ItemWrap class="contetn_left-bottom contetn_lr-item" title="详细数据">
+        <LeftBottomTop/>
+      </ItemWrap>
+      <ItemWrap class="contetn_left-extra contetn_lr-item" title="AI数据分析">
+        <LeftExtra/>
       </ItemWrap>
     </div>
     <div class="contetn_center">
@@ -32,29 +25,22 @@
       </ItemWrap>
     </div>
     <div class="contetn_right">
-      <ItemWrap
-          class="contetn_left-bottom contetn_lr-item"
-          title="报警次数"
-      >
+      <ItemWrap class="contetn_right-top contetn_lr-item" title="报警次数">
         <RightTop/>
       </ItemWrap>
-      <ItemWrap
-          class="contetn_left-bottom contetn_lr-item"
-          title="灯光控制"
-          style="padding: 0 10px 16px 10px"
-      >
-        <!--        <RightCenter />-->
+      <ItemWrap class="contetn_right-center contetn_lr-item" title="电闸控制">
         <RightLight :publish="publish"/>
       </ItemWrap>
-      <ItemWrap
-          class="contetn_left-bottom contetn_lr-item"
-          title="数据统计图 "
-      >
+      <ItemWrap class="contetn_right-bottom contetn_lr-item" title="设备情况">
+        <LeftBottom/>
+      </ItemWrap>
+      <ItemWrap class="contetn_right-extra contetn_lr-item" title="报警详情">
         <RightBottom/>
       </ItemWrap>
     </div>
   </div>
 </template>
+
 
 <script>
 import LeftTop from './left-top.vue'
@@ -67,7 +53,10 @@ import RightTop from "./right-top.vue";
 import RightCenter from "./right-center.vue";
 import RightBottom from "./right-bottom.vue";
 import RightLight from "./right-center-light.vue";
+import LeftBottomTop from "./left-bottom-top.vue";
+import LeftExtra from "./left-extra.vue";
 import mqtt from "mqtt";
+import {GET} from "@/api";
 
 
 export default {
@@ -82,15 +71,13 @@ export default {
     RightBottom,
     RightLight,
     CenterBottom,
+    LeftBottomTop,
+    LeftExtra
   },
   data() {
     return {
       mqttConnectionStatus: '未连接', // 初始状态为未连接
       receivedMessages: [],// 接受消息存放数组
-      temperatureData: [], // 温度数据
-      humidityData: [],// 湿度数据
-      lightingData: [],// 光强数据
-      powerData: [],// 功率数据
       idData: [],// 设备编号
       lngData: [],// 经度数据
       latData: [],// 维度数据
@@ -108,10 +95,6 @@ export default {
 
   mounted() {
     this.initMqtt();
-    this.updateChartData();
-    this.chartUpdateInterval = setInterval(() => {
-      this.updateChartData();
-    }, 100);
   },
   methods: {
     /**
@@ -152,7 +135,7 @@ export default {
      * MQTT订阅函数(订阅多个信息)
      */
     subscribes() {
-      const arr = ['temp_hum/emqx', 'led/emqx', 'online/emqx']
+      const arr = ['transparent/req']
       this.client.subscribe(arr, {qos: 1}, (err) => {
         if (!err) {
           console.log(`主题为：“${arr}” 的消息订阅成功`)
@@ -195,51 +178,51 @@ export default {
       }
     },
 
-    /**
-     * 更新数据数组
-     */
-    updateChartData() {
-      const temperature = this.getLatestValueByTopic('temp_hum/emqx', 'temp');
-      const humidity = this.getLatestValueByTopic('temp_hum/emqx', 'hum');
-      const light = this.getLatestValueByTopic('temp_hum/emqx', 'light');
-      const power = this.getLatestValueByTopic('temp_hum/emqx', 'power');
-      const id = this.getLatestValueByTopic('temp_hum/emqx', 'id');
-      const led = this.getLatestValueByTopic('temp_hum/emqx', 'LED');
-      const lng = this.getLatestValueByTopic('temp_hum/emqx', 'lng');
-      const lat = this.getLatestValueByTopic('temp_hum/emqx', 'lat');
-
-      // 判断是否要添加数据
-      if (temperature !== 'N/A' && humidity !== 'N/A' && light !== 'N/A' && power !== 'N/A') {
-        const currentTime = new Date();
-        const currentTimeString = currentTime.toISOString();
-
-        // 删除旧数据
-        this.temperatureData = this.temperatureData.slice(-10);
-        this.humidityData = this.humidityData.slice(-10);
-        this.lightingData = this.lightingData.slice(-10);
-        this.powerData = this.powerData.slice(-10);
-        this.idData = this.idData.slice(-10);
-        this.lngData = this.lngData.slice(-10);
-        this.latData = this.latData.slice(-10);
-
-        // 判断是否是新数据
-        if (!this.temperatureData.length || this.temperatureData[0].time !== currentTimeString) {
-          // 添加新数据
-          this.temperatureData.push({time: currentTimeString, value: temperature});
-          this.humidityData.push({time: currentTimeString, value: humidity});
-          this.lightingData.push({time: currentTimeString, value: light});
-          this.powerData.push({time: currentTimeString, value: power});
-          this.idData.push({time: currentTimeString, value: id});
-          this.lngData.push({time: currentTimeString, value: lng});
-          this.latData.push({time: currentTimeString, value: lat});
-          this.timeData.push(currentTimeString);
-        }
-      }
-    },
-
-    /**
-     * 数据处理
-     */
+    // /**
+    //  * 更新数据数组
+    //  */
+    // updateChartData() {
+    //   const temperature = this.getLatestValueByTopic('temp_hum/emqx', 'temp');
+    //   const humidity = this.getLatestValueByTopic('temp_hum/emqx', 'hum');
+    //   const light = this.getLatestValueByTopic('temp_hum/emqx', 'light');
+    //   const power = this.getLatestValueByTopic('temp_hum/emqx', 'power');
+    //   const id = this.getLatestValueByTopic('temp_hum/emqx', 'id');
+    //   const led = this.getLatestValueByTopic('temp_hum/emqx', 'LED');
+    //   const lng = this.getLatestValueByTopic('temp_hum/emqx', 'lng');
+    //   const lat = this.getLatestValueByTopic('temp_hum/emqx', 'lat');
+    //
+    //   // 判断是否要添加数据
+    //   if (temperature !== 'N/A' && humidity !== 'N/A' && light !== 'N/A' && power !== 'N/A') {
+    //     const currentTime = new Date();
+    //     const currentTimeString = currentTime.toISOString();
+    //
+    //     // 删除旧数据
+    //     this.temperatureData = this.temperatureData.slice(-10);
+    //     this.humidityData = this.humidityData.slice(-10);
+    //     this.lightingData = this.lightingData.slice(-10);
+    //     this.powerData = this.powerData.slice(-10);
+    //     this.idData = this.idData.slice(-10);
+    //     this.lngData = this.lngData.slice(-10);
+    //     this.latData = this.latData.slice(-10);
+    //
+    //     // 判断是否是新数据
+    //     if (!this.temperatureData.length || this.temperatureData[0].time !== currentTimeString) {
+    //       // 添加新数据
+    //       this.temperatureData.push({time: currentTimeString, value: temperature});
+    //       this.humidityData.push({time: currentTimeString, value: humidity});
+    //       this.lightingData.push({time: currentTimeString, value: light});
+    //       this.powerData.push({time: currentTimeString, value: power});
+    //       this.idData.push({time: currentTimeString, value: id});
+    //       this.lngData.push({time: currentTimeString, value: lng});
+    //       this.latData.push({time: currentTimeString, value: lat});
+    //       this.timeData.push(currentTimeString);
+    //     }
+    //   }
+    // },
+    //
+    // /**
+    //  * 数据处理
+    //  */
     handleReceivedMessage(topic, message, packet) {
       this.receivedMessages.unshift({
         topic,
@@ -261,70 +244,67 @@ export default {
 
       //清除定时任务
       clearInterval(this.chartUpdateInterval);
-    }
-  },
-
+    },
+  }
 };
 </script>
 <style lang="scss" scoped>
-// 内容
 .contents {
+  display: flex;
+  height: 100vh; /* 确保内容充满视口高度 */
+
   .contetn_left,
   .contetn_right {
     width: 540px;
     box-sizing: border-box;
-    // padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; // 平均分布空间
+    position: relative;
+    overflow: hidden; /* 防止内容溢出 */
   }
 
   .contetn_center {
     width: 720px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    overflow: hidden; /* 防止内容溢出 */
   }
 
-  //左右两侧 三个块
   .contetn_lr-item {
-    height: 310px;
+    flex: 1; /* 确保每个 item 均分高度 */
+    margin-bottom: 2px;
+    max-height: 25%; /* 可以根据需要调整 */
+    overflow: hidden; /* 防止内容超出 */
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-content {
+      height: 100%;
+      overflow-y: auto; /* 启用垂直滚动 */
+    }
   }
 
   .contetn_center_top {
     width: 100%;
-  }
-
-  // 中间
-  .contetn_center {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+    flex: 1; /* 确保高度均分 */
+    overflow: hidden;
   }
 
   .contetn_center-bottom {
     height: 315px;
+    overflow: hidden;
   }
 
-  //左边 右边 结构一样
-  .contetn_left,
-  .contetn_right {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    position: relative;
-
-
+  .contetn_right-bottom {
+    height: auto;
+    min-height: 200px;
+    overflow: hidden; /* 避免内容超出 */
   }
-}
 
-
-@keyframes rotating {
-  0% {
-    -webkit-transform: rotate(0) scale(1);
-    transform: rotate(0) scale(1);
-  }
-  50% {
-    -webkit-transform: rotate(180deg) scale(1.1);
-    transform: rotate(180deg) scale(1.1);
-  }
-  100% {
-    -webkit-transform: rotate(360deg) scale(1);
-    transform: rotate(360deg) scale(1);
-  }
 }
 </style>
+

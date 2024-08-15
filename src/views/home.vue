@@ -16,7 +16,7 @@
           <div class="guang"></div>
           <div class="d-flex jc-center">
             <div class="title">
-              <span class="title-text">智能照明管理系统</span>
+              <span class="title-text">大周路中和厂中厂用电安全超前预警系统</span>
             </div>
           </div>
           <div class="timers">
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { formatTime } from "../utils/index.js";
+import { formatTime } from "@/utils";
 import Setting from "./setting.vue";
 import ScaleScreen from "@/components/scale-screen/scale-screen.vue";
 export default {

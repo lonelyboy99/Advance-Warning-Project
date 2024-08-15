@@ -48,7 +48,7 @@ export default {
       this.pageflag = true
       // this.pageflag =false
 
-      currentGET('big1').then(res => {
+      currentGET('device').then(res => {
         //只打印一次
         if (!this.timer) {
           console.log("设备总览", res);
@@ -195,7 +195,7 @@ export default {
               length: 20, // 第一段线 长度
               length2: 36, // 第二段线 长度
               show: true,
-            
+
             },
               emphasis: {
                 show: true,

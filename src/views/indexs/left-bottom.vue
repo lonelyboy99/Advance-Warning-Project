@@ -1,15 +1,8 @@
-<!--
- * @Author: daidai
- * @Date: 2022-03-01 09:43:37
- * @LastEditors: Please set LastEditors
- * @LastEditTime: 2022-09-09 11:40:22
- * @FilePath: \web-pc\src\pages\big-screen\view\indexs\left-bottom.vue
--->
 <template>
   <div
-    v-if="pageflag"
-    class="left_boottom_wrap beautify-scroll-def"
-    :class="{ 'overflow-y-auto': !sbtxSwiperFlag }"
+      v-if="pageflag"
+      class="left_boottom_wrap beautify-scroll-def"
+      :class="{ 'overflow-y-auto': !sbtxSwiperFlag }"
   >
     <component :is="components" :data="list" :class-option="defaultOption">
       <ul class="left_boottom">
@@ -19,33 +12,44 @@
             <div class="dibu"></div>
             <div class="flex">
               <div class="info">
-                <span class="labels">设备ID：</span>
+                <span class="labels">烟雾传感器ID：</span>
                 <span class="contents zhuyao doudong wangguan">
-                  {{ item.gatewayno }}</span
-                >
+                  {{ item.serialNumber }}</span>
               </div>
               <div class="info">
                 <span class="labels">时间：</span>
                 <span class="contents " style="font-size: 12px">
-                  {{ item.createTime }}</span
-                >
+                  {{ item.masterLastCommTime }}</span>
               </div>
             </div>
 
-              <span
+            <span
                 class="types doudong"
                 :class="{
-                  typeRed: item.onlineState == 0,
-                  typeGreen: item.onlineState == 1,
-                }"
-                >{{ item.onlineState == 1 ? "上线" : "下线" }}</span
-              >
-
-            <div class="info addresswrap">
-              <span class="labels">地址：</span>
-              <span class="contents ciyao" style="font-size: 12px">
-                {{ addressHandle(item) }}</span
-              >
+                typeRed: item.masterOnline === 0,
+                typeGreen: item.masterOnline === 1,
+              }"
+            >{{ item.masterOnline === 1 ? "在线" : "离线" }}</span
+            >
+            <div class="flex">
+              <div class="info addresswrap">
+                <span class="labels">当前温度：</span>
+                <span class="contents zhuyao doudong wangguan" style="font-size: 20px">
+                {{ item.currentValue }}</span
+                >
+              </div>
+              <div class="info addresswrap">
+                <span class="labels">高温报警阈值：</span>
+                <span class="contents ciyao" style="font-size: 12px">
+                {{ item.maxValue }}</span
+                >
+              </div>
+              <div class="info addresswrap">
+                <span class="labels">低温报警阈值：</span>
+                <span class="contents ciyao" style="font-size: 12px">
+                {{ item.lowValue }}</span
+                >
+              </div>
             </div>
           </div>
         </li>
@@ -53,15 +57,16 @@
     </component>
   </div>
 
-  <Reacquire v-else @onclick="getData" style="line-height: 200px" />
+  <Reacquire v-else @onclick="getData" style="line-height: 200px"/>
 </template>
 
 <script>
-import { currentGET } from "api";
+import {currentGET} from "api";
 import vueSeamlessScroll from "vue-seamless-scroll"; // vue2引入方式
 import Kong from "../../components/kong.vue";
+
 export default {
-  components: { vueSeamlessScroll, Kong },
+  components: {vueSeamlessScroll, Kong},
   data() {
     return {
       list: [],
@@ -70,7 +75,7 @@ export default {
       defaultOption: {
         ...this.$store.state.setting.defaultOption,
         singleHeight: 240,
-        limitMoveNum: 5, 
+        limitMoveNum: 5,
         step: 0,
       },
     };
@@ -87,35 +92,29 @@ export default {
     },
   },
   created() {
-    
+
   },
 
   mounted() {
     this.getData();
+    this.getDataHandle = setInterval(() => {
+      this.getData();
+    }, 10000);
+  },
+  beforeDestroy() {
+    clearInterval(this.getDataHandle);
   },
   methods: {
-    addressHandle(item) {
-      let name = item.provinceName;
-      if (item.cityName) {
-        name += "/" + item.cityName;
-        if (item.countyName) {
-          name += "/" + item.countyName;
-        }
-      }
-      return name;
-    },
     getData() {
       this.pageflag = true;
-      // this.pageflag =false
-      currentGET("big3", { limitNum: 20 }).then((res) => {
+      currentGET("big3", {limitNum: 20}).then((res) => {
         console.log("设备提醒", res);
         if (res.success) {
-          this.countUserNumData = res.data;
-          this.list = res.data.list;
+          this.list = res.data;
           let timer = setTimeout(() => {
             clearTimeout(timer);
             this.defaultOption.step =
-              this.$store.state.setting.defaultOption.step;
+                this.$store.state.setting.defaultOption.step;
           }, this.$store.state.setting.defaultOption.waitTime);
         } else {
           this.pageflag = false;
@@ -129,15 +128,15 @@ export default {
   },
 };
 </script>
+
 <style lang='scss' scoped>
 .left_boottom_wrap {
   overflow: hidden;
   width: 100%;
-  height: 100%;
+  height: 90%;
 }
 
 .doudong {
-  //  vertical-align:middle;
   overflow: hidden;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
@@ -160,6 +159,7 @@ export default {
     padding: 8px;
     font-size: 14px;
     margin: 10px 0;
+
     .orderNum {
       margin: 0 16px 0 -20px;
     }
@@ -177,7 +177,7 @@ export default {
       }
 
       .zhuyao {
-        color: $primary-color;
+        color: #1890ff;
         font-size: 15px;
       }
 
@@ -201,6 +201,7 @@ export default {
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
+
       .dibu {
         position: absolute;
         height: 2px;
@@ -210,6 +211,7 @@ export default {
         left: -2%;
         background-size: cover;
       }
+
       .addresswrap {
         width: 100%;
         display: flex;
@@ -223,19 +225,6 @@ export default {
       font-size: 15px;
       width: 80px;
       flex-shrink: 0;
-    }
-
-
-    .time {
-      font-size: 12px;
-      // color: rgba(211, 210, 210,.8);
-      color: #fff;
-    }
-
-    .address {
-      font-size: 12px;
-      cursor: pointer;
-      // @include text-overflow(1);
     }
 
     .types {

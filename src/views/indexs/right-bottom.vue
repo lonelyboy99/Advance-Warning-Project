@@ -1,10 +1,3 @@
-<!--
- * @Author: daidai
- * @Date: 2022-03-01 15:27:58
- * @LastEditors: Please set LastEditors
- * @LastEditTime: 2022-05-07 11:24:14
- * @FilePath: \web-pc\src\pages\big-screen\view\indexs\right-center.vue
--->
 <template>
   <div v-if="pageflag" class="right_center_wrap beautify-scroll-def" :class="{ 'overflow-y-auto': !sbtxSwiperFlag }">
     <component :is="components" :data="list" :class-option="defaultOption">
@@ -16,37 +9,33 @@
             <div class="flex">
               <div class="info">
                 <span class="labels ">设备ID：</span>
-                <span class="contents zhuyao"> {{ item.gatewayno }}</span>
+                <span class="contents zhuyao"> {{ item.serialNumber }}</span>
               </div>
               <div class="info">
                 <span class="labels">型号：</span>
-                <span class="contents "> {{ item.terminalno }}</span>
+                <span  style="font-size: 13px" class="contents "> {{ item.modelName }}</span>
               </div>
               <div class="info">
                 <span class="labels">告警值：</span>
-                <span class="contents warning"> {{ item.alertvalue | montionFilter }}</span>
+                <span class="contents warning"> {{ item.alertValue }}</span>
               </div>
             </div>
 
-
             <div class="flex">
-
               <div class="info">
                 <span class="labels"> 地址：</span>
-                <span class="contents ciyao" style="font-size:12px"> {{ item.provinceName }}/{{ item.cityName }}/{{ item.countyName }}</span>
+                <span class="contents ciyao" style="font-size:12px"> {{ item.address }}</span>
               </div>
               <div class="info time">
                 <span class="labels">时间：</span>
-                <span class="contents" style="font-size:12px"> {{ item.createtime }}</span>
+                <span class="contents" style="font-size:12px"> {{ item.alarmDate }}</span>
               </div>
-
             </div>
-            <div class="flex">
 
+            <div class="flex">
               <div class="info">
                 <span class="labels">报警内容：</span>
-                <span class="contents ciyao" :class="{ warning: item.alertdetail }"> {{ item.alertdetail || '无'
-                }}</span>
+                <span class="contents warning" :class="{ warning: item.alertdetail }"> {{ item.content || '无' }}</span>
               </div>
             </div>
           </div>
@@ -55,7 +44,6 @@
     </component>
   </div>
   <Reacquire v-else @onclick="getData" style="line-height:200px" />
-
 </template>
 
 <script>
@@ -71,11 +59,10 @@ export default {
       pageflag: true,
       defaultOption: {
         ...this.$store.state.setting.defaultOption,
-        limitMoveNum: 3, 
-        singleHeight: 250, 
+        limitMoveNum: 3,
+        singleHeight: 250,
         step:0,
       }
-
     };
   },
   computed: {
@@ -92,19 +79,25 @@ export default {
   created() {
     this.getData()
   },
-
-  mounted() { },
+  mounted() {
+    this.getData();
+    this.getDataHandle = setInterval(() => {
+      this.getData();
+    }, 10000);
+  },
+  beforeDestroy() {
+    clearInterval(this.getDataHandle);
+  },
   methods: {
     getData() {
       this.pageflag = true
-      // this.pageflag =false
-      currentGET('big5', { limitNum: 50 }).then(res => {
-        console.log('数据统计图', res);
+      currentGET('alarm').then(res => {
+        console.log('报警信息', res);
         if (res.success) {
-          this.list = res.data.list
+          this.list = res.data
           let timer = setTimeout(() => {
-              clearTimeout(timer)
-              this.defaultOption.step=this.$store.state.setting.defaultOption.step
+            clearTimeout(timer)
+            this.defaultOption.step=this.$store.state.setting.defaultOption.step
           }, this.$store.state.setting.defaultOption.waitTime);
         } else {
           this.pageflag = false
@@ -112,10 +105,10 @@ export default {
         }
       })
     },
-
   },
 };
 </script>
+
 <style lang='scss' scoped>
 .right_center {
   width: 100%;
@@ -133,7 +126,6 @@ export default {
     .orderNum {
       margin: 0 20px 0 -20px;
     }
-
 
     .inner_right {
       position: relative;
@@ -174,19 +166,19 @@ export default {
       }
 
       .warning {
-        color: #E6A23C;
-        font-size: 15px;
+        color: #e63c3c;
+        font-size: 20px;
       }
     }
-
   }
 }
 
 .right_center_wrap {
-  overflow: hidden;
+  overflow-y: auto; // 确保在内容超出时可以滚动
   width: 100%;
-  height: 250px;
+  height: 200px; // 固定高度
 }
+
 
 .overflow-y-auto {
   overflow-y: auto;

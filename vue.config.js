@@ -20,7 +20,7 @@ module.exports = {
   productionSourceMap: false,
   css: {
     // 是否使用css分离插件 ExtractTextPlugin
-    extract: process.env.NODE_ENV === "production" ? true : false,//是否将组件中的 CSS 提取至一个独立的 CSS 文件中 (而不是动态注入到 JavaScript 中的 inline 代码)。
+    extract: process.env.NODE_ENV === "production",//是否将组件中的 CSS 提取至一个独立的 CSS 文件中 (而不是动态注入到 JavaScript 中的 inline 代码)。
     sourceMap: false,//是否为 CSS 开启 source map。设置为 true 之后可能会影响构建的性能。
     loaderOptions: {
       sass: {

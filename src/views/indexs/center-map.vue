@@ -7,10 +7,6 @@
     </div>
     <div class="mapwrap">
       <dv-border-box-13>
-        <div class="quanguo" @click="getData('china')" v-if="code !== 'china'">
-          中国
-        </div>
-
         <Echart id="CenterMap" :options="options" ref="CenterMap" />
       </dv-border-box-13>
     </div>
@@ -27,28 +23,49 @@ export default {
     return {
       maptitle: "设备分布图",
       options: {},
-      code: "china", //china 代表中国 其他地市是行政编码
+      code: "320100", // Jiangsu Province code
       echartBindClick: false,
-      isSouthChinaSea: false, //是否要展示南海群岛  修改此值请刷新页面
     };
   },
-  created() {},
-
   mounted() {
-    // console.log(xzqCode);
-    this.getData("china");
+    this.getData("320100");
+    // Initialize with Jiangsu Province
   },
   methods: {
     getData(code) {
       currentGET("big8", { regionCode: code }).then((res) => {
-        console.log("设备分布", res);
         if (res.success) {
-          this.getGeojson(res.data.regionCode, res.data.dataList);
-          this.mapclick();
+          this.processData(res.data.regionCode, res.data.dataList);
         } else {
           this.$Message.warning(res.msg);
         }
       });
+    },
+    processData(regionCode, dataList) {
+      // 转换数据格式
+      const processedData = dataList.map(item => ({
+        name: this.getDistrictName(item.cityCode),
+        value: item.device_count
+      }));
+
+      console.log("Processed Data with Device Counts:", processedData);
+
+      this.getGeojson(regionCode, processedData);
+    },
+    getDistrictName(cityCode) {
+      const districtNames = {
+        '320102': '玄武区',
+        '320104': '秦淮区',
+        '320105': '建邺区',
+        '320106': '鼓楼区',
+        '320113': '栖霞区',
+        '320114': '雨花台区',
+        '320115': '江宁区',
+        '320116': '六合区',
+        '320117': '溧水区',
+        '320118': '高淳区'
+      };
+      return districtNames[cityCode] || '未知区域';
     },
     /**
      * @description: 获取geojson
@@ -58,12 +75,9 @@ export default {
      */
     async getGeojson(name, mydata) {
       this.code = name;
-      //如果要展示南海群岛并且展示的是中国的话
-      let geoname=name
-      if (this.isSouthChinaSea && name == "china") {
-        geoname = "chinaNanhai";
-      }
-      //如果有注册地图的话就不用再注册 了
+
+      let geoname = name
+
       let mapjson = echarts.getMap(name);
       if (mapjson) {
         mapjson = mapjson.geoJSON;
@@ -78,7 +92,7 @@ export default {
       //根据geojson获取省份中心点
       arr.map((item) => {
         cityCenter[item.properties.name] =
-          item.properties.centroid || item.properties.center;
+            item.properties.centroid || item.properties.center;
       });
       let newData = [];
       mydata.map((item) => {
@@ -92,7 +106,6 @@ export default {
       this.init(name, mydata, newData);
     },
     init(name, data, data2) {
-      // console.log(data2);
       let top = 45;
       let zoom = 1.05;
       let option = {
@@ -143,9 +156,7 @@ export default {
             name: "MAP",
             type: "map",
             map: name,
-            // aspectScale: 0.78,
             data: data,
-            // data: [1,100],
             selectedMode: false, //是否允许选中多个区域
             zoom: zoom,
             geoIndex: 1,
@@ -168,9 +179,7 @@ export default {
             label: {
               show: false,
               color: "#000",
-              // position: [-10, 0],
               formatter: function (val) {
-                // console.log(val)
                 if (val.data !== undefined) {
                   return val.name.slice(0, 2);
                 } else {
@@ -220,12 +229,10 @@ export default {
             coordinateSystem: "geo",
             symbolSize: function (val) {
               return 4;
-              // return val[2] / 50;
             },
             legendHoverLink: true,
             showEffectOn: "render",
             rippleEffect: {
-              // period: 4,
               scale: 6,
               color: "rgba(255,255,255, 1)",
               brushType: "fill",
@@ -249,7 +256,6 @@ export default {
               formatter: (param) => {
                 return param.name.slice(0, 2);
               },
-
               fontSize: 11,
               offset: [0, 2],
               position: "bottom",
@@ -260,7 +266,6 @@ export default {
               color: "#FFF",
               show: true,
             },
-            // colorBy: "data",
             itemStyle: {
               color: "rgba(255,255,255,1)",
               borderColor: "rgba(2255,255,255,2)",
@@ -270,10 +275,6 @@ export default {
             },
           },
         ],
-         //动画效果
-            // animationDuration: 1000,
-            // animationEasing: 'linear',
-            // animationDurationUpdate: 1000
       };
       this.options = option;
     },
@@ -283,23 +284,10 @@ export default {
         type: "warning",
       });
     },
-    mapclick() {
-      if (this.echartBindClick) return;
-      //单击切换到级地图，当mapCode有值,说明可以切换到下级地图
-      this.$refs.CenterMap.chart.on("click", (params) => {
-        // console.log(params);
-        let xzqData = xzqCode[params.name];
-        if (xzqData) {
-          this.getData(xzqData.adcode);
-        } else {
-          this.message("暂无下级地市!");
-        }
-      });
-      this.echartBindClick = true;
-    },
   },
 };
 </script>
+
 <style lang="scss" scoped>
 .centermap {
   margin-bottom: 30px;
@@ -316,10 +304,10 @@ export default {
       font-weight: 900;
       letter-spacing: 6px;
       background: linear-gradient(
-        92deg,
-        #0072ff 0%,
-        #00eaff 48.8525390625%,
-        #01aaff 100%
+              92deg,
+              #0072ff 0%,
+              #00eaff 48.8525390625%,
+              #01aaff 100%
       );
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -346,26 +334,8 @@ export default {
   .mapwrap {
     height: 548px;
     width: 100%;
-    // padding: 0 0 10px 0;
     box-sizing: border-box;
     position: relative;
-
-    .quanguo {
-      position: absolute;
-      right: 20px;
-      top: -46px;
-      width: 80px;
-      height: 28px;
-      border: 1px solid #00eded;
-      border-radius: 10px;
-      color: #00f7f6;
-      text-align: center;
-      line-height: 26px;
-      letter-spacing: 6px;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0, 237, 237, 0.5),
-        0 0 6px rgba(0, 237, 237, 0.4);
-    }
   }
 }
 </style>

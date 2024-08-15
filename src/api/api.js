@@ -64,7 +64,7 @@ export const GET = async (url, params) => {
         }, configs_ENC);
         return data;
     } catch (error) {
-        return error;
+        return { success: false, message: 'API调用失败', error: error.message };
     }
 }
 //没有基地址 访问根目录下文件

@@ -73,49 +73,30 @@ Mock.mock(new RegExp('sbtx'), 'get', sbtx)
 function centermap(options) {
     let params = parameteUrl(options.url);
 
-    if (params.regionCode && params.regionCode !== 'china') {
-        // 如果指定了 regionCode，则只返回该区域的数据
-        const a = Mock.mock({
-            success: true,
-            data: {
-                "dataList|30": [
-                    {
-                        name: "@city()",
-                        value: '@integer(1, 1000)'
-                    }
-                ],
-                regionCode: params.regionCode,
-            }
-        });
-        return a;
-    } else {
-        // 如果未指定 regionCode，则生成中国地图数据，确保江苏省存在
-        const jiangsuData = {
-            name: "江苏省",
-            value: '@integer(1, 1000)'
-        };
+    // 明确指定南京市的区名称
+    const nanjingDistricts = [
+        "玄武区", "秦淮区", "建邺区", "鼓楼区", "浦口区", "栖霞区",
+        "雨花台区", "江宁区", "六合区", "溧水区", "高淳区"
+    ];
 
-        const otherProvinceData = Mock.mock({
-            "dataList|7": [
-                {
-                    name: "@province()",
-                    value: '@integer(1, 1000)'
-                }
-            ]
-        }).dataList;
+    // 生成南京市的区数据
+    const dataList = nanjingDistricts.map(district => ({
+        name: `${district}`,
+        value: Mock.mock('@integer(1, 1000)')
+    }));
 
-        const allProvinceData = [jiangsuData, ...otherProvinceData];
+    const response = Mock.mock({
+        success: true,
+        data: {
+            dataList: dataList,
+            regionCode: '320100',
+        }
+    });
 
-        const a = Mock.mock({
-            success: true,
-            data: {
-                dataList: allProvinceData,
-                regionCode: 'china',
-            }
-        });
-        return a;
-    }
+    console.log('Generated Nanjing District Data:', response);
+    return response;
 }
+
 
 Mock.mock(new RegExp('centermap'), 'get', centermap);
 

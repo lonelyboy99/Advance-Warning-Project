@@ -7,7 +7,7 @@
  */
 let UtilVar = {
     ENC: false, //返回结果是否加密
-    baseUrl: `http://localhost:8888`,
+    baseUrl: `http://122.51.210.27:8888`,
     code: 401,
 }
 const runtimeType = {
@@ -15,7 +15,7 @@ const runtimeType = {
         /**
          * 通过打包配置打某个环境的api地址
          */
-        UtilVar.baseUrl = `http://localhost:8888`
+        UtilVar.baseUrl = `http://122.51.210.27:8888`
     },
     //测试环境
     test:()=>{
