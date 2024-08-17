@@ -338,7 +338,7 @@ export default {
 
   .details-button {
     position: absolute;
-    bottom: 200px;
+    bottom: 40px;
     right: 10px;
     padding: 20px 0 0 0;
     font-size: 15px;

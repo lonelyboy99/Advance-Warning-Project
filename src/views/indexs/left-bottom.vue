@@ -133,7 +133,7 @@ export default {
 .left_boottom_wrap {
   overflow: hidden;
   width: 100%;
-  height: 90%;
+  height: 100%;
 }
 
 .doudong {

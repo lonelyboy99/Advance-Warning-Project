@@ -14,6 +14,7 @@
 <script>
 import { currentGET } from 'api/modules';
 
+
 export default {
   data() {
     return {
@@ -78,7 +79,6 @@ export default {
             { name: '线电压Ubc', value: snap.Ubc },
             { name: '线电压Uca', value: snap.Uca },
           ];
-
 
           console.log('获取的所有数据:', this.allData);  // 添加调试信息
 

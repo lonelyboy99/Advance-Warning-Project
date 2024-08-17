@@ -62,6 +62,7 @@ import {currentGET} from "api";
 import vueSeamlessScroll from "vue-seamless-scroll"; // vue2引入方式
 import Kong from "../../components/kong.vue";
 
+
 export default {
   components: {vueSeamlessScroll, Kong},
   data() {
@@ -76,8 +77,10 @@ export default {
         limitMoveNum: 5,
         step: 0,
       },
+      newList: []
     };
   },
+
   computed: {
     sbtxSwiperFlag() {
       let sbtxSwiper = this.$store.state.setting.sbtxSwiper;
@@ -117,6 +120,21 @@ export default {
             {name: 'A相有功功率', value: snap.Pa},
             {name: 'B相有功功率', value: snap.Pb},
             {name: 'C相有功功率', value: snap.Pc},
+            {name: '三相不平衡度', value: snap.Unbalance},
+            {name: 'A相谐波电压', value: snap.HUA},
+            {name: 'B相谐波电压', value: snap.HUB},
+            {name: 'C相谐波电压', value: snap.HUC},
+            {name: '总视在功率', value: snap.AllS},
+            {name: '总无功功率', value: snap.AllQ},
+            {name: 'A相谐波电流', value: snap.HIA},
+            {name: 'B相谐波电流', value: snap.HIB},
+            {name: 'C相谐波电流', value: snap.HIC},
+            {name: 'A相电压', value: snap.Va},
+            {name: 'B相电压', value: snap.Vb},
+            {name: 'C相电压', value: snap.Vc},
+            {name: '线电压Uab', value: snap.Uab},
+            {name: '线电压Ubc', value: snap.Ubc},
+            {name: '线电压Uca', value: snap.Uca},
           ];
 
           this.list = newList.map((item, index) => {
@@ -171,7 +189,7 @@ export default {
 .left_extra_wrap {
   overflow: hidden;
   width: 100%;
-  height: 80%;
+  height: 90%;
 }
 
 .doudong {

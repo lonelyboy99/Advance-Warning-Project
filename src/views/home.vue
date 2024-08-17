@@ -1,12 +1,12 @@
 <template>
   <!-- <div id="index" ref="appRef" class="index_home" :class="{ pageisScale: isScale }"> -->
   <ScaleScreen
-    :width="1920"
-    :height="1080"
-    class="scale-wrap"
-    :selfAdaption="$store.state.setting.isScale"
+      :width="2560"
+      :height="1440"
+      class="scale-wrap"
+      :selfAdaption="$store.state.setting.isScale"
   >
-    <div class="bg">
+  <div class="bg">
       <dv-loading v-if="loading">Loading...</dv-loading>
       <div v-else class="host-body">
         <!-- 头部 s -->

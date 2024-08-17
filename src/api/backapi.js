@@ -9,20 +9,38 @@ const port = 8888;
 
 app.use(cors()); // 使用cors中间件
 
-const db = mysql.createConnection({
-    host: '139.224.230.205',
-    user: 'power',
-    password: 'cyh991103',
-    database: 'power'
-});
+app.use(cors()); // 使用cors中间件
 
-db.connect(err => {
-    if (err) {
-        console.error('数据库连接失败: ' + err.stack);
-        return;
-    }
-    console.log('已连接到数据库');
-});
+let db;
+
+function handleDisconnect() {
+    db = mysql.createConnection({
+        host: '139.224.230.205',
+        user: 'power',
+        password: 'cyh991103',
+        database: 'power',
+        connectTimeout: 10000,
+    });
+
+    db.connect(err => {
+        if (err) {
+            console.error('数据库连接失败: ' + err.stack);
+            setTimeout(handleDisconnect, 2000); // 2秒后重试连接
+        } else {
+            console.log('已连接到数据库');
+        }
+    });
+
+    db.on('error', err => {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnect(); // 自动重连
+        } else {
+            throw err;
+        }
+    });
+}
+
+handleDisconnect(); // 初始连接数据库
 
 app.get('/api/devices', (req, res) => {
     const limitNum = parseInt(req.query.limitNum, 10) || 20; // 获取limitNum参数
@@ -45,51 +63,6 @@ app.get('/api/devices', (req, res) => {
         });
     });
 });
-
-// app.get('/api/environment', (req, res) => {
-//     const sql = 'SELECT temperature, humidity, lighting, power FROM environment_data ORDER BY timestamp DESC LIMIT 1';
-//
-//     db.query(sql, (err, results) => {
-//         if (err) {
-//             return res.status(500).json({success: false, message: '数据库查询失败', error: err});
-//         }
-//         res.json({
-//             success: true,
-//             data: results[0]
-//         });
-//     });
-// });
-
-// app.get('/api/figShow', (req, res) => {
-//     const sql = `
-//     SELECT date, bar_value AS barData, line_value AS lineData, rate_value AS rateData
-//     FROM installation_plan
-//     WHERE date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-//     ORDER BY date ASC
-//   `;
-//
-//     db.query(sql, (err, results) => {
-//         if (err) {
-//             return res.status(500).json({success: false, message: '数据库查询失败', error: err});
-//         }
-//
-//         // 格式化日期为 YYYY-MM-DD
-//         const data = {
-//             category: results.map(item => {
-//                 const date = new Date(item.date);
-//                 return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-//             }),
-//             barData: results.map(item => item.barData),
-//             lineData: results.map(item => item.lineData),
-//             rateData: results.map(item => item.rateData.toFixed(0))
-//         };
-//
-//         res.json({
-//             success: true,
-//             data: data
-//         });
-//     });
-// });
 
 app.get('/api/deviceError', (req, res) => {
     const sql = `
@@ -439,9 +412,9 @@ app.get('/api/alarm', async (req, res) => {
             await upsertErrorRecord(data.errorType, today);
         }
 
-        res.json({ success: true, data: combinedData });
+        res.json({success: true, data: combinedData});
     } catch (error) {
-        res.status(500).json({ success: false, message: '获取报警信息失败', error: error.message });
+        res.status(500).json({success: false, message: '获取报警信息失败', error: error.message});
     }
 });
 

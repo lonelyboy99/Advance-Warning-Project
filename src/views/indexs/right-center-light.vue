@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 20px 0 0 140px" class="container">
+  <div class="container">
     <input type="checkbox" id="checkbox" :checked="checked" @click="clickHandle()" ref="checkbox"/>
     <label for="checkbox" class="switch">
       <span style="font-size: 50px">{{State}}</span>
@@ -15,26 +15,14 @@
       </svg>
     </label>
   </div>
-
 </template>
-
 <script>
 export default {
   props: ['publish'],
   data() {
     return {
-      checked:"",
-      State:"接通",
-      inputNumberProps1: {
-        size: 'large',
-      },
-      inputNumberProps2: {
-        size: 'large',
-      },
-      sliderValue1: 0,
-      sliderValue2: 0,
-      sliderChangeTimeout1: null,
-      sliderChangeTimeout2: null,
+      checked: "",
+      State: "接通",
     };
   },
   methods: {
@@ -52,59 +40,22 @@ export default {
         this.State = "断开";
       }
     },
-    handleSliderChange(topic, sliderIdentifier, value) {
-      console.log(this.$refs.checkbox.checked);
-      const sliderChangeTimeout = this[`sliderChangeTimeout${sliderIdentifier}`];
-      if (sliderChangeTimeout) {
-        clearTimeout(sliderChangeTimeout);
-      }
-
-      this[`sliderChangeTimeout${sliderIdentifier}`] = setTimeout(() => {
-        let message = {};
-        if (sliderIdentifier === '1') {
-          message = {led: value};
-        } else if (sliderIdentifier === '2') {
-          message = {freq: value};
-        }
-        this.publish(topic, JSON.stringify(message));
-      }, 1000);
-    },
-
   },
 };
 </script>
-
 <style scoped>
-.light-container {
+.container {
   display: flex;
-  width: 100%;
-  justify-content: space-around;
-}
-
-.light-item {
-  flex-basis: 100px;
-}
-
-.t-slider__mark-text {
-  color: rgba(163, 209, 255, 0.8); /* Light blue color matching the nebula */
-  font-size: 15px;
-}
-
-.t-input__wrap {
-  width: auto;
-  display: flex;
-  flex-direction: row;
-}
-
-#checkbox {
-  display: none;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  height: 20vh; /* 使容器的高度占满整个视口 */
 }
 
 .switch {
   position: relative;
   width: fit-content;
   padding: 10px 20px;
-  background-color: rgba(10, 20, 30, 0.9); /* Dark blue background with a slight transparency */
+  background-color: rgba(10, 20, 30, 0.9); /* 深蓝色背景，带有轻微透明度 */
   border-radius: 50px;
   z-index: 1;
   cursor: pointer;
@@ -112,19 +63,22 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: rgba(163, 209, 255, 0.8); /* Light blue text */
+  color: rgba(163, 209, 255, 0.8); /* 淡蓝色文字 */
   font-size: 0.9em;
   font-weight: 600;
   transition: all 0.3s;
 }
 
 .switch svg path {
-  fill: rgba(163, 209, 255, 0.8); /* Light blue color matching the nebula */
+  fill: rgba(163, 209, 255, 0.8); /* 与背景一致的淡蓝色 */
+}
+
+#checkbox {
+  display: none;
 }
 
 #checkbox:checked + .switch {
-  background-color: rgba(20, 40, 60, 0.9); /* Slightly brighter blue when checked */
-  box-shadow: 0px 0px 40px rgba(163, 209, 255, 0.5); /* Light blue glow */
+  background-color: rgba(20, 40, 60, 0.9); /* 选中时的稍亮的蓝色 */
+  box-shadow: 0px 0px 40px rgba(163, 209, 255, 0.5); /* 淡蓝色光晕 */
 }
-
 </style>
