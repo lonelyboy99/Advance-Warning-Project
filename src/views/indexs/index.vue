@@ -1,20 +1,16 @@
 <template>
   <div class="contents">
     <div class="content_left">
-      <div class="pagetab">
-        <div class="item">实时监测</div>
-        <div class="item">MQTT:{{ mqttConnectionStatus }}</div>
-      </div>
-      <ItemWrap class="content_left-item" title="数据监控">
+      <ItemWrap class="content_left-item" title="数据监控" :disableZoom="true">
         <LeftTop/>
       </ItemWrap>
       <ItemWrap class="content_left-item" title="AI预测">
         <LeftPrediction/>
       </ItemWrap>
-      <ItemWrap class="content_left-item" title="详细数据">
+      <ItemWrap class="content_left-item" title="详细数据" :disableZoom="true">
         <LeftBottomTop/>
       </ItemWrap>
-      <ItemWrap class="content_left-item" title="AI数据分析">
+      <ItemWrap class="content_left-item" title="AI数据分析" :disableZoom="true">
         <LeftExtra/>
       </ItemWrap>
     </div>
@@ -28,7 +24,7 @@
       <ItemWrap class="content_right-item" title="报警次数">
         <RightTop/>
       </ItemWrap>
-      <ItemWrap class="content_right-item" title="电闸控制">
+      <ItemWrap class="content_right-item" title="电闸控制" :disableZoom="true">
         <RightLight :publish="publish"/>
       </ItemWrap>
       <ItemWrap class="content_right-item" title="设备情况">
@@ -40,6 +36,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import LeftTop from './left-top.vue'
 import LeftPrediction from "./left-center-prediction.vue";
@@ -134,59 +131,68 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
+// 内容
 .contents {
   display: flex;
   justify-content: space-between;
-  height: 100vh; // 适应全屏高度
 
   .content_left,
   .content_right {
-    width: 25%; // 左右两侧各占25%
+    width: 25%; // 左右各占25%
+    box-sizing: border-box;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    padding: 16px 0;
   }
 
   .content_center {
-    width: 50%; // 中间部分占50%
+    width: 50%; // 中间占50%
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
   }
 
-  // 左右两侧每个块的样式
-  .content_left-item,
-  .content_right-item {
-    height: calc((100% - 48px) / 4); // 四个块的高度均分
-    margin-bottom: 16px;
-  }
-
-  // 去掉最后一个块的下间距
-  .content_left-item:last-child,
-  .content_right-item:last-child {
-    margin-bottom: 0;
-  }
-
-  // 中间部分的顶部和底部块样式
   .content_center-top {
-    height: 50%; // 占用中间区域的一半高度
+    width: 100%;
   }
 
   .content_center-bottom {
-    height: 50%; // 占用中间区域的另一半高度
+    height: 315px;
+  }
+
+  .content_left-item,
+  .content_right-item {
+    height: 230px;
+  }
+}
+
+@media (max-width: 768px) {
+  .contents {
+    flex-direction: column;
+
+    .content_left,
+    .content_right,
+    .content_center {
+      width: 100%;
+    }
   }
 }
 
 @keyframes rotating {
   0% {
+    -webkit-transform: rotate(0) scale(1);
     transform: rotate(0) scale(1);
   }
   50% {
+    -webkit-transform: rotate(180deg) scale(1.1);
     transform: rotate(180deg) scale(1.1);
   }
   100% {
+    -webkit-transform: rotate(360deg) scale(1);
     transform: rotate(360deg) scale(1);
   }
 }

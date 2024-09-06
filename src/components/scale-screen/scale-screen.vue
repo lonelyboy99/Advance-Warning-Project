@@ -21,11 +21,11 @@ function debounce(fn, delay) {
   let timer = null;
   return function (...args) {
     timer = setTimeout(
-      () => {
-        typeof fn === "function" && fn.apply(null, args);
-        clearTimeout(timer);
-      },
-      delay > 0 ? delay : 100
+        () => {
+          typeof fn === "function" && fn.apply(null, args);
+          clearTimeout(timer);
+        },
+        delay > 0 ? delay : 100
     );
   };
 }
@@ -35,11 +35,11 @@ export default {
   props: {
     width: {
       type: [String, Number],
-      default: 2560,
+      default: 1920,
     },
     height: {
       type: [String, Number],
-      default: 1440,
+      default: 1080,
     },
     fullScreen: {
       type: Boolean,
@@ -159,21 +159,26 @@ export default {
     },
     updateScale() {
       const screenWrapper = this.screenWrapper;
+      // 获取真实视口尺寸
       const currentWidth = document.body.clientWidth;
       const currentHeight = document.body.clientHeight;
+      // 获取大屏最终的宽高onResize
       const realWidth = this.currentWidth || this.originalWidth;
       const realHeight = this.currentHeight || this.originalHeight;
+      // 计算缩放比例
       const widthScale = currentWidth / realWidth;
       const heightScale = currentHeight / realHeight;
+      // console.log({currentWidth, currentHeight,realWidth,realHeight});
+
+      // 若要铺满全屏，则按照各自比例缩放
+      if (this.fullScreen) {
+        screenWrapper.style.transform = `scale(${widthScale},${heightScale})`;
+        return false;
+      }
+      // 按照宽高最小比例进行缩放
       const scale = Math.min(widthScale, heightScale);
       this.handleAutoScale(scale);
-
-      // 居中显示
-      const mx = Math.max((currentWidth - realWidth * scale) / 2, 0);
-      const my = Math.max((currentHeight - realHeight * scale) / 2, 0);
-      screenWrapper.style.margin = `${my}px ${mx}px`;
     },
-
     initMutationObserver() {
       const screenWrapper = this.screenWrapper;
       const observer = (this.observer = new MutationObserver(() => {

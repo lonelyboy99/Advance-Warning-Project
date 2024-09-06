@@ -1,8 +1,8 @@
 <template>
   <!-- <div id="index" ref="appRef" class="index_home" :class="{ pageisScale: isScale }"> -->
   <ScaleScreen
-      :width="2560"
-      :height="1440"
+      :width="1920"
+      :height="1080"
       class="scale-wrap"
       :selfAdaption="$store.state.setting.isScale"
   >
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { formatTime } from "@/utils";
+import { formatTime } from "../utils/index.js";
 import Setting from "./setting.vue";
 import ScaleScreen from "@/components/scale-screen/scale-screen.vue";
 export default {

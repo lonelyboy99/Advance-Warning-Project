@@ -21,7 +21,7 @@ import { GETNOBASE } from "api";
 export default {
   data() {
     return {
-      maptitle: "设备分布图",
+      maptitle: "南京市设备分布图",
       options: {},
       code: "320100", // Jiangsu Province code
       echartBindClick: false,

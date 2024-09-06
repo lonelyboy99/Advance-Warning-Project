@@ -437,7 +437,7 @@ app.get('/api/deviceParams', async (req, res) => {
         const responseData = await detectorGetAccessToken();
         const accessToken1 = responseData.access_token;
         // 请求设备参数的API URL
-        const url = 'https://fire-api.htcxcloud.com/api/v1/device/66b75ebe9da0133cb703aba1/snap';
+        const url = 'https://fire-api.htcxcloud.com/api/v1/device/66c31fb0f35cc2295feb6aaf/snap';
 
         // 发出GET请求
         const response = await axios.get(url, {
@@ -469,7 +469,7 @@ app.get('/api/Temp', async (req, res) => {
         const accessToken1 = responseData.access_token;
 
         const tempResponse = await axios.get(
-            'https://fire-api.htcxcloud.com/api/v1/count/66b75ebe9da0133cb703aba1/aisleParamCurve?aisleUnit=TEMP',
+            'https://fire-api.htcxcloud.com/api/v1/count/66c31fb0f35cc2295feb6aaf/aisleParamCurve?aisleUnit=TEMP',
             {
                 headers: {
                     'Authorization': `Bearer ${accessToken1}`
@@ -479,7 +479,7 @@ app.get('/api/Temp', async (req, res) => {
 
         // 获取泄漏电流数据
         const leakageResponse = await axios.get(
-            'https://fire-api.htcxcloud.com/api/v1/count/66b75ebe9da0133cb703aba1/aisleParamCurve?aisleUnit=LEAKAGE',
+            'https://fire-api.htcxcloud.com/api/v1/count/66c31fb0f35cc2295feb6aaf/aisleParamCurve?aisleUnit=LEAKAGE',
             {
                 headers: {
                     'Authorization': `Bearer ${accessToken1}`
