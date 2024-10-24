@@ -34,7 +34,7 @@ axios.interceptors.response.use(response => {
       /**
      * @code 登录过期 token验证失败 根据后端调 
      */
-    if (response.data.code == UtilVar.code) {
+    if (response.data.code === UtilVar.code) {
         // router.push("/login")
     }
     return response.data

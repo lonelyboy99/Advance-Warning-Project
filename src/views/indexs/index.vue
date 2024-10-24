@@ -1,38 +1,45 @@
 <template>
   <div class="contents">
-    <div class="content_left">
-      <ItemWrap class="content_left-item" title="数据监控" :disableZoom="true">
+    <div class="contetn_left">
+      <ItemWrap class="contetn_left-top contetn_lr-item" title="数据监控" :disableZoom="true">
         <LeftTop/>
       </ItemWrap>
-      <ItemWrap class="content_left-item" title="AI预测">
+      <ItemWrap class="contetn_left-center contetn_lr-item" title="AI预测">
         <LeftPrediction/>
       </ItemWrap>
-      <ItemWrap class="content_left-item" title="详细数据" :disableZoom="true">
-        <LeftBottomTop/>
-      </ItemWrap>
-      <ItemWrap class="content_left-item" title="AI数据分析" :disableZoom="true">
+      <!--      <ItemWrap class="content_left-item" title="详细数据" :disableZoom="true">-->
+      <!--        <LeftBottomTop/>-->
+      <!--      </ItemWrap>-->
+      <ItemWrap class="contetn_left-bottom contetn_lr-item"
+                title="AI数据分析"
+                :disableZoom="true"
+                style="padding: 0 10px 16px 10px"
+      >
         <LeftExtra/>
       </ItemWrap>
     </div>
-    <div class="content_center">
-      <CenterMap class="content_center-top"/>
-      <ItemWrap class="content_center-bottom" title="图表展示">
+    <div class="contetn_center">
+      <CenterMap class="contetn_center_top" />
+      <ItemWrap class="contetn_center-bottom" title="图表展示">
         <CenterBottom/>
       </ItemWrap>
     </div>
-    <div class="content_right">
-      <ItemWrap class="content_right-item" title="报警次数">
+      <div class="contetn_right">
+      <ItemWrap class="contetn_left-bottom contetn_lr-item"
+                title="报警次数">
         <RightTop/>
       </ItemWrap>
-      <ItemWrap class="content_right-item" title="电闸控制" :disableZoom="true">
+      <ItemWrap class="contetn_left-bottom contetn_lr-item"
+                title="电闸控制" :disableZoom="true">
         <RightLight :publish="publish"/>
       </ItemWrap>
-      <ItemWrap class="content_right-item" title="设备情况">
+      <ItemWrap class="contetn_left-bottom contetn_lr-item"
+                title="设备情况">
         <LeftBottom/>
       </ItemWrap>
-      <ItemWrap class="content_right-item" title="报警详情">
-        <RightBottom/>
-      </ItemWrap>
+      <!--      <ItemWrap class="content_right-item" title="报警详情">-->
+      <!--        <RightBottom/>-->
+      <!--      </ItemWrap>-->
     </div>
   </div>
 </template>
@@ -96,7 +103,7 @@ export default {
     },
     subscribes() {
       const arr = ['transparent/req'];
-      this.client.subscribe(arr, { qos: 1 }, (err) => {
+      this.client.subscribe(arr, {qos: 1}, (err) => {
         if (!err) {
           console.log(`主题为：“${arr}” 的消息订阅成功`);
         }
@@ -110,7 +117,7 @@ export default {
         console.log('客户端未连接');
         return;
       }
-      this.client.publish(topic, message, { qos: 0 }, (err) => {
+      this.client.publish(topic, message, {qos: 0}, (err) => {
         if (!err) {
           console.log(`主题为：${topic},内容为：${message} 发布成功`);
         }
@@ -135,52 +142,49 @@ export default {
 <style lang="scss" scoped>
 // 内容
 .contents {
-  display: flex;
-  justify-content: space-between;
-
-  .content_left,
-  .content_right {
-    width: 25%; // 左右各占25%
+  .contetn_left,
+  .contetn_right {
+    width: 540px;
     box-sizing: border-box;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+    // padding: 16px 0;
   }
 
-  .content_center {
-    width: 50%; // 中间占50%
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+  .contetn_center {
+    width: 720px;
   }
 
-  .content_center-top {
+  //左右两侧 三个块
+  .contetn_lr-item {
+    height: 310px;
+  }
+
+  .contetn_center_top {
     width: 100%;
   }
 
-  .content_center-bottom {
+  // 中间
+  .contetn_center {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .contetn_center-bottom {
     height: 315px;
   }
 
-  .content_left-item,
-  .content_right-item {
-    height: 230px;
-  }
-}
-
-@media (max-width: 768px) {
-  .contents {
+  //左边 右边 结构一样
+  .contetn_left,
+  .contetn_right {
+    display: flex;
     flex-direction: column;
+    justify-content: space-around;
+    position: relative;
 
-    .content_left,
-    .content_right,
-    .content_center {
-      width: 100%;
-    }
+
   }
 }
+
 
 @keyframes rotating {
   0% {

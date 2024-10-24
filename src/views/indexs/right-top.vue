@@ -143,7 +143,7 @@ export default {
         series: [
           {
             data: smokeData,
-            type: "bar",
+            type: "line",
             smooth: true,
             symbol: "none", //去除点
             name: "烟雾报警次数",
@@ -209,7 +209,7 @@ export default {
           },
           {
             data: overloadData,
-            type: "bar",
+            type: "line",
             smooth: true,
             symbol: "none", //去除点
             name: "故障次数",
@@ -275,7 +275,7 @@ export default {
           },
           {
             data: overtempData,
-            type: "bar",
+            type: "line",
             smooth: true,
             symbol: "none", //去除点
             name: "报警次数",

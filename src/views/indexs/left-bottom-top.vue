@@ -7,7 +7,7 @@
 -->
 <template>
   <div class="right_bottom">
-    <dv-capsule-chart :config="config" style="width:100%;height:260px" />
+    <dv-capsule-chart :config="config" style="width:100%;height:100%" />
   </div>
 </template>
 

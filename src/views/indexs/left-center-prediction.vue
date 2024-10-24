@@ -9,13 +9,18 @@
 
 <script>
 import { graphic } from "echarts";
+import TransparentModal from './TransparentModal.vue';
 
 export default {
+  components: {
+    TransparentModal,
+  },
   data() {
     return {
       options: {},
       intervalId: null,
       showWarning: false,
+      isModalVisible: false,
     };
   },
   mounted() {
@@ -87,6 +92,7 @@ export default {
             data: ["剩余电流", "AI预测", "故障概率"],
             textStyle: {
               color: "#B4B4B4",
+              fontSize: 15,
             },
             top: "0",
           },
@@ -106,6 +112,13 @@ export default {
             axisTick: {
               show: false,
             },
+            axisLabel: {
+              fontSize: 16, // 调整字体大小
+              margin: 8, // 标签与轴线的间距
+              formatter: function (value) {
+                return value.substring(0, 8); // 截断显示
+              },
+            },
           },
           yAxis: [
             {
@@ -118,6 +131,7 @@ export default {
               },
               axisLabel: {
                 formatter: "{value} A",
+                fontSize: 14, // 调整字体大小
               },
             },
             {
@@ -130,6 +144,7 @@ export default {
               },
               axisLabel: {
                 formatter: "{value}%",
+                fontSize: 12, // 调整字体大小
               },
               min: 0,
               max: 100,
@@ -176,6 +191,9 @@ export default {
 
       this.$refs.bottomLeftTopChart && this.$refs.bottomLeftTopChart.resize();
     },
+    showModal() {
+      this.isModalVisible = true;
+    },
   },
 };
 </script>
@@ -184,6 +202,7 @@ export default {
 .left_bottom_top {
   width: 100%;
   height: 100%;
+  position: relative;
 
   .echarts_bottom {
     width: 100%;
@@ -199,6 +218,24 @@ export default {
     background: rgba(255, 255, 0, 0.7);
     padding: 10px;
     border-radius: 5px;
+  }
+
+  .chart-link { /* 放大查看图表的文字链接样式 */
+    position: absolute;
+    bottom: 7px; /* 距离底部10px */
+    right: 0px; /* 距离右边10px */
+    color: #3498db; /* 文字颜色 */
+    cursor: pointer; /* 鼠标悬停时显示指针 */
+    font-size: 14px; /* 文字大小 */
+
+    &:hover {
+      color: #2980b9; /* 悬停时的颜色 */
+    }
+  }
+
+  .echarts_modal {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

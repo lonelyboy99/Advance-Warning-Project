@@ -9,8 +9,6 @@ const port = 8888;
 
 app.use(cors()); // 使用cors中间件
 
-app.use(cors()); // 使用cors中间件
-
 let db;
 
 function handleDisconnect() {

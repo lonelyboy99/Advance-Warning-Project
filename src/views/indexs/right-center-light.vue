@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" >
     <input type="checkbox" id="checkbox" :checked="checked" @click="clickHandle()" ref="checkbox"/>
     <label for="checkbox" class="switch">
       <span style="font-size: 50px">{{State}}</span>
@@ -48,7 +48,7 @@ export default {
   display: flex;
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
-  height: 20vh; /* 使容器的高度占满整个视口 */
+  height: 12vh; /* 使容器的高度占满整个视口 */
 }
 
 .switch {

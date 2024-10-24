@@ -6,11 +6,12 @@ export const paramType ={
     'big3':"/api/smoke", //设备提醒
     'big4':"/bigscreen/alarmNum", //报警次数
     'big5':'/bigscreen/ssyj',//实时预警 
-    'big6':'/api/Temp',// 安装计划
+    'big6':'/api/device1',// 安装计划
     'big7':'/bigscreen/ranking',// 报警排名
     'big8':'/api/regionCode',// //中间地图
     'alarm':'/api/alarm',// //中间地图
     'device':'/api/deviceParams',
+
 }
 /******************      通用增删改查       ********************* */
 /**
@@ -20,6 +21,7 @@ export const paramType ={
  export const currentList =  (key,param)=> {
     return API.GET(paramType[key]+"/list", param)
 }
+
 export const currentPage =  (key,param)=> {
     return API.GET(paramType[key]+"/page", param)
 }

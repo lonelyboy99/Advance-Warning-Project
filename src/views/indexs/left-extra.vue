@@ -7,7 +7,6 @@
     <component :is="components" :data="list" :class-option="defaultOption">
       <ul class="left_extra">
         <li class="left_extra_item" v-for="(item, i) in list" :key="i">
-          <span class="orderNum doudong">{{ i + 1 }}</span>
           <div class="inner_right">
             <div class="dibu"></div>
             <div class="flex">

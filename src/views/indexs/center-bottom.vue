@@ -9,51 +9,83 @@
 </template>
 
 <script>
-import { currentGET } from "api";
-import { graphic } from "echarts";
+import axios from 'axios';
+
 export default {
   data() {
     return {
       options: {},
+      apiList: [
+        "http://122.51.210.27:8030/api/devices",
+        "http://122.51.210.27:8030/api/devices1",
+        "http://122.51.210.27:8030/api/devices2",
+        "http://122.51.210.27:8030/api/devices3",
+        "http://122.51.210.27:8030/api/devices4",
+        "http://122.51.210.27:8030/api/devices5",
+        "http://122.51.210.27:8030/api/devices6",
+        "http://122.51.210.27:8030/api/devices7",
+        "http://122.51.210.27:8030/api/devices8",
+      ],
     };
   },
-  props: {},
   mounted() {
     this.getData();
     this.intervalId = setInterval(() => {
       this.getData();
-    }, 10000); // 每10秒更新一次，单位是毫秒
+    }, 10000); // 每10秒更新一次
   },
   methods: {
     getData() {
-      currentGET("big6", {}).then((res) => {
-        console.log("图表展示", res);
-        if (res.success) {
-          this.init(res.data);
+      const allDataPromises = this.apiList.map((url) => {
+        return axios.get(url).then((res) => {
+          console.log(`完整的响应数据 (${url}):`, res.data);
+          // 检查 res.data.data 是否存在，并确认 list 是数组
+          if (res.data || res.data.data || Array.isArray(res.data.data.list)) {
+            return res.data.list; // 返回数据列表
+          } else {
+            console.warn(`从 ${url} 获取的数据结构不符合预期`);
+            return null;
+          }
+        }).catch((error) => {
+          console.error(`请求 ${url} 出错:`, error);
+          return null; // 返回 null 以便过滤掉失败的请求
+        });
+      });
+
+      // 等待所有请求完成
+      Promise.all(allDataPromises).then((results) => {
+        const filteredResults = results.filter(result => result !== null);
+        console.log("获取的所有数据: ", results);
+        console.log("过滤后的数据: ", filteredResults);
+        if (filteredResults.length > 0) {
+          this.init(filteredResults);
         } else {
           this.$Message({
-            text: res.msg,
+            text: "未能获取到任何数据",
             type: "warning",
           });
         }
       });
     },
-    init(newData) {
-      // 创建多个系列，并将 CH1 改为 "剩余电流"
-      const series = Object.keys(newData.seriesData).map((aisleName) => {
-        let seriesName = aisleName === "CH1" ? "剩余电流" : aisleName;
-
+    init(allData) {
+      // 整理图表 series 数据
+      const combinedSeries = allData.map((deviceData, index) => {
+        // 只获取最后10个数据点
+        const lastTenData = deviceData.slice(-10);
         return {
-          name: seriesName,
+          name: `设备${index + 1}`,
           type: "line",
           smooth: true,
           showAllSymbol: true,
           symbol: "emptyCircle",
           symbolSize: 8,
-          yAxisIndex: seriesName === "剩余电流" ? 1 : 0, // "剩余电流" 使用第二个y轴（mA）
-          data: newData.seriesData[aisleName],
+          yAxisIndex: 0, // 修改为使用第一个y轴 (mA)
+          data: lastTenData.map(item => item.remaindeRelectric),
         };
       });
+
+      // 使用第一个设备的时间数据作为 X 轴
+      const category = allData.length > 0 ? allData[0].slice(-10).map(item => item.time) : [];
 
       this.options = {
         tooltip: {
@@ -66,21 +98,19 @@ export default {
           formatter: function (params) {
             let result = params[0].name + "<br>";
             params.forEach(function (item) {
-              const unit = item.seriesName === "剩余电流" ? "mA" : "℃";
               result +=
                   item.marker +
                   " " +
                   item.seriesName +
                   " : " +
                   item.value +
-                  unit +
-                  "</br>";
+                  "mA</br>";
             });
             return result;
           },
         },
         legend: {
-          data: series.map((s) => s.name), // 显示所有系列的名字
+          data: combinedSeries.map((s) => s.name),
           textStyle: {
             color: "#B4B4B4",
           },
@@ -93,7 +123,7 @@ export default {
           top: "20px",
         },
         xAxis: {
-          data: newData.category,
+          data: category,
           axisLine: {
             lineStyle: {
               color: "#B4B4B4",
@@ -105,18 +135,7 @@ export default {
         },
         yAxis: [
           {
-            splitLine: { show: false },
-            axisLine: {
-              lineStyle: {
-                color: "#B4B4B4",
-              },
-            },
-            axisLabel: {
-              formatter: "{value}°C",
-            },
-          },
-          {
-            splitLine: { show: false },
+            splitLine: {show: false},
             axisLine: {
               lineStyle: {
                 color: "#B4B4B4",
@@ -127,13 +146,13 @@ export default {
             },
           },
         ],
-        series: series,
+        series: combinedSeries,
       };
     },
     beforeDestroy() {
       clearInterval(this.intervalId);
     },
-  },
+  }
 };
 </script>
 

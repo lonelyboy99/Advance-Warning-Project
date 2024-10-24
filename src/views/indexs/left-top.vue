@@ -24,40 +24,34 @@
       </div>
       <p>三相不平衡度</p>
       <!-- 详细数据按钮 -->
-      <el-button type="text" @click="visible = true" class="details-button">详细数据</el-button>
-      <t-dialog
-          header="探测器详细数据"
-          :visible.sync="visible"
-          class="custom-dialog"
-          @confirm="onConfirm"
-          width="100%"
-          mode="full-screen"
-          :cancelBtn="null"
-          :confirmOnEnter="true"
-          :onConfirm="onConfirmAnother"
-          :onCancel="onCancel"
-          :onEscKeydown="onKeydownEsc"
-          :onCloseBtnClick="onClickCloseBtn"
-          :onOverlayClick="onClickOverlay"
-          :onClose="close"
+      <div @click="visible = true" class="chart-link">详细数据</div>
+      <TransparentModal
+          :visible="visible"
+          title="探测器详细数据"
+          @close="visible = false"
+          width="90%"
+          height="90%"
       >
         <t-row :gutter="[16, 16]">
           <t-col v-for="(key, index) in Object.keys(snapData)" :key="index" :xl="2" :xs="6">
-            <t-card :bordered="false" :style="{height: '150px' }" :title="keyToChinese[key]">
+            <t-card :bordered="false" :title="keyToChinese[key]">
               {{ snapData[key] }}
             </t-card>
           </t-col>
         </t-row>
-      </t-dialog>
+      </TransparentModal>
     </li>
   </ul>
 </template>
 
-
 <script>
-import {GET} from "@/api";
+import { GET } from "@/api";
+import TransparentModal from './TransparentModal.vue'; // 引入透明背景的弹窗组件
 
 export default {
+  components: {
+    TransparentModal,
+  },
   data() {
     return {
       ch2Temperature: null, // CH2温度数据
@@ -180,28 +174,9 @@ export default {
         console.error('API调用失败:', error);
       }
     },
-    onConfirm(context) {
-      console.log('@confirm与onConfirm任选一种方式即可，其他几个事件类似', context);
+    close() {
       this.visible = false;
-    },
-    onConfirmAnother(context) {
-      console.log('点击了确认按钮', context);
-    },
-    close(context) {
-      console.log('关闭弹窗，点击关闭按钮、按下ESC、点击蒙层等触发', context);
-    },
-    onCancel(context) {
-      console.log('点击了取消按钮', context);
-    },
-    onKeydownEsc(context) {
-      console.log('按下了ESC', context);
-    },
-    onClickCloseBtn(context) {
-      console.log('点击了关闭按钮', context);
-    },
-    onClickOverlay(context) {
-      console.log('点击了蒙层', context);
-    },
+    }
   },
   computed: {
     ch2TemperatureConfig() {
@@ -264,9 +239,9 @@ export default {
 }
 
 .t-card {
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+  background: linear-gradient(135deg, #1e3c72 40%, #2a5298 100%) !important;
   color: #ffffff !important;
-  font-size: 20px;
+  font-size: 30px;
 }
 
 .t-card__title {
@@ -350,6 +325,17 @@ export default {
       color: #e8dbdf;
     }
   }
+  .chart-link { /* 放大查看图表的文字链接样式 */
+    position: absolute;
+    bottom: 7px; /* 距离底部10px */
+    right: 10px; /* 距离右边10px */
+    color: #3498db; /* 文字颜色 */
+    cursor: pointer; /* 鼠标悬停时显示指针 */
+    font-size: 14px; /* 文字大小 */
 
+    &:hover {
+      color: #2980b9; /* 悬停时的颜色 */
+    }
+  }
 }
 </style>

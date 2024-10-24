@@ -133,7 +133,7 @@ export default {
 .left_boottom_wrap {
   overflow: hidden;
   width: 100%;
-  height: 100%;
+  height: 90%;
 }
 
 .doudong {
@@ -161,7 +161,7 @@ export default {
     margin: 10px 0;
 
     .orderNum {
-      margin: 0 16px 0 -20px;
+      margin: 0 1px 0 -20px;
     }
 
     .info {

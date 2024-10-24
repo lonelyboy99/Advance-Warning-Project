@@ -174,12 +174,9 @@ export default {
 }
 
 .right_center_wrap {
-  overflow-y: auto; // 确保在内容超出时可以滚动
   width: 100%;
-  height: 200px; // 固定高度
+  height: 100%; // 固定高度
 }
-
-
 .overflow-y-auto {
   overflow-y: auto;
 }
