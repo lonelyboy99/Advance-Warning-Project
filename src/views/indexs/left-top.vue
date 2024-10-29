@@ -4,25 +4,25 @@
       <div class="user_Overview_nums allnum">
         <dv-digital-flop :config="ch2TemperatureConfig" style="width:100%;height:100%;"/>
       </div>
-      <p>A相谐波电压V</p>
+      <p>设备总数</p>
     </li>
     <li class="user_Overview-item" style="color: #07f7a8">
       <div class="user_Overview_nums online">
         <dv-digital-flop :config="ch3TemperatureConfig" style="width:100%;height:100%;"/>
       </div>
-      <p>Ia相电流A</p>
+      <p>在线设备</p>
     </li>
     <li class="user_Overview-item" style="color: #e3b337">
       <div class="user_Overview_nums offline">
         <dv-digital-flop :config="ch1CurrentConfig" style="width:100%;height:100%;"/>
       </div>
-      <p>总电量KW·h</p>
+      <p>离线设备</p>
     </li>
     <li class="user_Overview-item" style="color: #f5023d">
       <div class="user_Overview_nums laramnum">
         <dv-digital-flop :config="ch1PowerConfig" style="width:100%;height:100%;"/>
       </div>
-      <p>三相不平衡度</p>
+      <p>报警设备</p>
       <!-- 详细数据按钮 -->
       <div @click="visible = true" class="chart-link">详细数据</div>
       <TransparentModal
@@ -54,10 +54,10 @@ export default {
   },
   data() {
     return {
-      ch2Temperature: null, // CH2温度数据
-      ch3Temperature: null, // CH3温度数据
-      ch1Current: null, // CH1电流数据
-      ch1Power: null, // CH1功率数据
+      ch2Temperature: 9, // CH2温度数据
+      ch3Temperature: 9, // CH3温度数据
+      ch1Current: 0, // CH1电流数据
+      ch1Power: 0, // CH1功率数据
       pageflag: true,
       visible: false,
       snapData: {},// 保存从接口获取的数据
@@ -111,72 +111,72 @@ export default {
     clearInterval(this.updateInterval);
   },
   methods: {
-    async fetchTempData() {
-      try {
-        const res = await GET('/api/Temp');
-        const res1 = await GET('/api/deviceParams');
-        console.log('API 返回的数据:', res, res1);  // 添加调试日志
-
-        if (res.success && res1.success) {
-          const seriesData = res.data.seriesData;
-          const snapData = res1.data.snap;
-
-          // 设置页面显示的数据
-          this.ch2Temperature = res1.data.snap.HUA;  // 设置A相谐波电压
-          this.ch3Temperature = res1.data.snap.Ia;   // 设置Ia相电流
-          this.ch1Current = res1.data.snap.AllE;     // 设置总电量
-          this.ch1Power = res1.data.snap.Unbalance;  // 设置三相不平衡度
-
-          // 保存 snap 数据用于弹窗中的显示
-          this.snapData = {
-            Va: snapData.Va,
-            Vb: snapData.Vb,
-            Vc: snapData.Vc,
-            Uab: snapData.Uab,
-            Ubc: snapData.Ubc,
-            Uca: snapData.Uca,
-            Ia: snapData.Ia,
-            Ib: snapData.Ib,
-            Ic: snapData.Ic,
-            Pa: snapData.Pa,
-            Pb: snapData.Pb,
-            Pc: snapData.Pc,
-            Qa: snapData.Qa,
-            Qb: snapData.Qb,
-            Qc: snapData.Qc,
-            Sa: snapData.Sa,
-            Sb: snapData.Sb,
-            Sc: snapData.Sc,
-            AllP: snapData.AllP,
-            AllQ: snapData.AllQ,
-            AllS: snapData.AllS,
-            AllE: snapData.AllE,
-            GridF: snapData.GridF,
-            HIA: snapData.HIA,
-            HIB: snapData.HIB,
-            HIC: snapData.HIC,
-            HUA: snapData.HUA,
-            HUB: snapData.HUB,
-            HUC: snapData.HUC,
-            PfA: snapData.PfA,
-            PfB: snapData.PfB,
-            PfC: snapData.PfC,
-            Unbalance: snapData.Unbalance,
-            IaCT: snapData.IaCT,
-            IbCT: snapData.IbCT,
-            IcCT: snapData.IcCT,
-
-          };
-        } else {
-          console.error('获取设备参数数据失败:', res.message);
-        }
-      } catch (error) {
-        console.error('API调用失败:', error);
-      }
-    },
-    close() {
-      this.visible = false;
-    }
+  //   async fetchTempData() {
+  //     try {
+  //       const res = await GET('/api/Temp');
+  //       const res1 = await GET('/api/deviceParams');
+  //       console.log('API 返回的数据:', res, res1);  // 添加调试日志
+  //
+  //       if (res.success && res1.success) {
+  //         const seriesData = res.data.seriesData;
+  //         const snapData = res1.data.snap;
+  //
+  //         // 设置页面显示的数据
+  //         this.ch2Temperature = res1.data.snap.HUA;  // 设置A相谐波电压
+  //         this.ch3Temperature = res1.data.snap.Ia;   // 设置Ia相电流
+  //         this.ch1Current = res1.data.snap.AllE;     // 设置总电量
+  //         this.ch1Power = res1.data.snap.Unbalance;  // 设置三相不平衡度
+  //
+  //         // 保存 snap 数据用于弹窗中的显示
+  //         this.snapData = {
+  //           Va: snapData.Va,
+  //           Vb: snapData.Vb,
+  //           Vc: snapData.Vc,
+  //           Uab: snapData.Uab,
+  //           Ubc: snapData.Ubc,
+  //           Uca: snapData.Uca,
+  //           Ia: snapData.Ia,
+  //           Ib: snapData.Ib,
+  //           Ic: snapData.Ic,
+  //           Pa: snapData.Pa,
+  //           Pb: snapData.Pb,
+  //           Pc: snapData.Pc,
+  //           Qa: snapData.Qa,
+  //           Qb: snapData.Qb,
+  //           Qc: snapData.Qc,
+  //           Sa: snapData.Sa,
+  //           Sb: snapData.Sb,
+  //           Sc: snapData.Sc,
+  //           AllP: snapData.AllP,
+  //           AllQ: snapData.AllQ,
+  //           AllS: snapData.AllS,
+  //           AllE: snapData.AllE,
+  //           GridF: snapData.GridF,
+  //           HIA: snapData.HIA,
+  //           HIB: snapData.HIB,
+  //           HIC: snapData.HIC,
+  //           HUA: snapData.HUA,
+  //           HUB: snapData.HUB,
+  //           HUC: snapData.HUC,
+  //           PfA: snapData.PfA,
+  //           PfB: snapData.PfB,
+  //           PfC: snapData.PfC,
+  //           Unbalance: snapData.Unbalance,
+  //           IaCT: snapData.IaCT,
+  //           IbCT: snapData.IbCT,
+  //           IcCT: snapData.IcCT,
+  //
+  //         };
+  //       } else {
+  //         console.error('获取设备参数数据失败:', res.message);
+  //       }
+  //     } catch (error) {
+  //       console.error('API调用失败:', error);
+  //     }
+  //   },
+  //   close() {
+  //     this.visible = false;
+  //   }
   },
   computed: {
     ch2TemperatureConfig() {
